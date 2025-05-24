@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <!--CDN-->
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ml5@0.12.2/dist/ml5.min.js"></script>
+ 
+
+<script>
+    let AcutanguloA=[]
+    let AcutanguloB=[]
+    let TrianguloRectanguloA=[]
+    let TrianguloRectanguloB=[]
+    let TrianguloRectanguloC=[]
+    let TrianguloRectanguloD=[]
+
+    let shapeClassifier //Clasificador de formas
+
+    function preload(){
+      for(let i=0;i<150;i++){
+        let index=nf((i+1),3,0)//nf()= new format > 001,002 .... 100
+        AcutanguloA[i]=loadImage(`EntregableML/data/AcutanguloA${index}.png`)
+        AcutanguloB[i]=loadImage(`EntregableML/data/AcutanguloB${index}.png`)
+        TrianguloRectanguloA[i]=loadImage(`EntregableML/data/TrianguloRectanguloA${index}.png`)
+        TrianguloRectanguloB[i]=loadImage(`EntregableML/data/TrianguloRectanguloB${index}.png`)
+        TrianguloRectanguloC[i]=loadImage(`EntregableML/data/TrianguloRectanguloC${index}.png`)
+        TrianguloRectanguloD[i]=loadImage(`EntregableML/data/TrianguloRectanguloD${index}.png`)
+      }
+    }
+
+    function setup(){
+      //createCanvas(400,400) //Pruebas ...
+      //Objeto con párametros de entrenamiento
+
+      let options={
+        inputs :[64,64,4], //ancho, alto, RGBA(A=transparencia)
+        task   : 'imageClassification',
+        debug  : true
+      }
+
+      shapeClassifier =ml5.neuralNetwork(options)
+
+      //Enviamos datos para que entrene (300 png)
+      for(let i=0; i<150;i++){
+        shapeClassifier.addData({image: AcutanguloA[i]},{label:'AcutanguloA'})
+        shapeClassifier.addData({image: AcutanguloB[i]},{label:'AcutanguloB'})
+        shapeClassifier.addData({image: TrianguloRectanguloA[i]},{label:'TrianguloRectanguloA'})
+        shapeClassifier.addData({image: TrianguloRectanguloB[i]},{label:'TrianguloRectanguloB'})
+        shapeClassifier.addData({image: TrianguloRectanguloC[i]},{label:'TrianguloRectanguloC'})
+        shapeClassifier.addData({image: TrianguloRectanguloD[i]},{label:'TrianguloRectanguloD'})
+      }
+
+      //Normalización (revisión)
+      shapeClassifier.normalizeData()
+
+      //Inicia el entrenamiento
+      shapeClassifier.train({epochs:50}, finishedTraining)
+    }
+
+    function finishedTraining(){
+      console.log("Entrenamiento de red neuronal terminada")
+
+      //La red neuronal genera = 2 JSON + 1 BIN
+      shapeClassifier.save()
+    }
+  </script>
+</body>
+</html>
