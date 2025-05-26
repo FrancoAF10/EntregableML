@@ -17,7 +17,7 @@ for(int i=0;i<6;i++){
   
   translate(x,y);//va con push matrix
   
-  //Circulo
+  //triangulos
   if(i==0){
     triangle(0,-r,r,r,-r,r);
     saveFrame("data/AcutanguloA###.png");
